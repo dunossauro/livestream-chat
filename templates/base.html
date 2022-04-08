@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Live Chat</title>
+    <script type="text/javascript"
+	    src="https://cdn.jsdelivr.net/npm/brython@3.10/brython.min.js">
+    </script>
+    <script type="text/javascript"
+	    src="https://cdn.jsdelivr.net/npm/brython@3.10/brython_stdlib.js">
+    </script>
+    {% block script %}
+    {% endblock %}
+  </head>
+  <body onload="brython()">
+    {% block content %}
+    {% endblock %}
+  </body>
+</html>
