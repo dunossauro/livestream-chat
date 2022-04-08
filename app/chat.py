@@ -3,7 +3,7 @@ from os import environ
 from httpx import AsyncClient
 
 API_KEY = environ['GOOGLE_API_KEY']
-youtube_live_id = 'Oepli24s580'
+youtube_live_id = environ['LIVESTREAM_ID']
 
 BASE_URL = 'https://www.googleapis.com/youtube/v3/{}'
 
