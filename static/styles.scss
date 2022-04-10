@@ -1,0 +1,16 @@
+@import "node_modules/pixel-borders/src/styles/pixel-borders/pixel-borders-mixins";
+
+// Helper method to create custom styles e.g. colour themes, inset border, highlight
+@include pixel-box(
+        $corner-size: 1,
+        $border-size: 4px,
+        $border-color: #fff,
+        $background-color: #000,
+        $border-color: false,
+        $border-inset: true,
+        $border-inset-size: false,
+        $border-inset-color: true,
+        $border-inset-sides: false, // Sides to apply inset border: 'all', 'top-left' or 'bottom-right'
+        $border-inset-color-br: false, // Bottom right inset border colour
+        $border-inset-color-tl: false // Top left inset border colour
+);
