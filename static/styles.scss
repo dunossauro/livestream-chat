@@ -1,16 +1,34 @@
-@import "node_modules/pixel-borders/src/styles/pixel-borders/pixel-borders-mixins";
+@import "../node_modules/pixel-borders/src/styles/pixel-borders/pixel-borders-mixins";
+
+body {
+  background: black; // change to whatever color you use as mask in OBS
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
 
 // Helper method to create custom styles e.g. colour themes, inset border, highlight
-@include pixel-box(
-        $corner-size: 1,
-        $border-size: 4px,
-        $border-color: #fff,
-        $background-color: #000,
-        $border-color: false,
-        $border-inset: true,
-        $border-inset-size: false,
-        $border-inset-color: true,
-        $border-inset-sides: false, // Sides to apply inset border: 'all', 'top-left' or 'bottom-right'
-        $border-inset-color-br: false, // Bottom right inset border colour
-        $border-inset-color-tl: false // Top left inset border colour
-);
+.message {
+  color: #fff;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  @include pixel-box(
+          $corner-size: 1,
+          $border-size: 4px,
+          $border-color: #fff,
+          $background-color: #000,
+          $border-inset: true,
+          $border-inset-size: false,
+          $border-inset-color: true,
+          $border-inset-sides: false, // Sides to apply inset border: 'all', 'top-left' or 'bottom-right'
+          $border-inset-color-br: false, // Bottom right inset border colour
+          $border-inset-color-tl: false // Top left inset border colour
+  );
+
+  p {
+    margin: 0;
+  }
+
+  .message__author {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+}

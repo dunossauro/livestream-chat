@@ -1,0 +1,46 @@
+body {
+  background: black;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.message {
+  color: #fff;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-style: solid;
+  border-width: 4px;
+  border-color: #fff;
+  border-image-slice: 2;
+  border-image-width: 1;
+  border-image-outset: 0;
+  border-image-source: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='6' height='6'><path d='M0 2h2v2H0zM2 0h2v2H2zM4 2h2v2H4zM2 4h2v2H2z' fill='%23fff' /></svg>");
+  position: relative;
+  background-color: #000;
+}
+@supports (border-image-source: none) {
+  .message {
+    border-radius: 14px;
+  }
+}
+.message::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  box-shadow: inset -4px -4px true;
+}
+.message:hover, .message:focus {
+  background-color: black;
+}
+.message p {
+  margin: 0;
+}
+.message .message__author {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+/*# sourceMappingURL=styles.css.map */
