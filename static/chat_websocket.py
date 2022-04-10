@@ -6,8 +6,13 @@ def on_open(event):
 
 
 def on_message(event):
+    data = window.JSON.parse(event.data)
+    message = html.DIV("", Class="message")
+    message <= html.P(data.name, Class="message__author")
+    message <= html.P(data.message, Class="message__content")
+
     messages = document['messages']
-    messages <= html.P(event.data)
+    messages <= message
     messages.scrollTop = (
         messages.scrollHeight - messages.clientHeight
     )

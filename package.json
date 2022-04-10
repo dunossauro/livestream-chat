@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "compile-sass": "sass static/styles.scss:static/styles.css"
+  },
+  "devDependencies": {
+    "pixel-borders": "^1.1.4",
+    "sass": "^1.50.0"
+  }
+}
