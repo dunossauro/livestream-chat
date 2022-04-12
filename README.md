@@ -1,5 +1,15 @@
 # livestream-chat
 
+Overlay para chats de livestreams. Inicialmente para rodar dentro do browser do obs-studio.
+
+![livestream-chat](https://user-images.githubusercontent.com/1103672/162596499-ab338e0c-6301-47de-a720-08eff5c36582.gif)
+
+## TODO:
+
+- [ ] [Issues iniciais](https://github.com/dunossauro/livestream-chat/issues)
+- [ ] Suporte a API do Youtube
+- [ ] Suporte a API da Twitch
+
 
 ## Colocar as duas variáveis de ambiente
 
