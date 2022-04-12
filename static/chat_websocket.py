@@ -13,9 +13,8 @@ def on_message(event):
 
     messages = document['messages']
     messages <= message
-    messages.scrollTop = (
-        messages.scrollHeight - messages.clientHeight
-    )
+
+    window.scrollTo(0, document.body.scrollHeight)
 
 ws = websocket.WebSocket(
     f'ws://{window.location.host}/ws/chat'
