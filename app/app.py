@@ -1,11 +1,12 @@
 from os import environ
 from asyncio import sleep
 
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Request, WebSocket
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from httpx import AsyncClient
+from websockets.exceptions import ConnectionClosedOK
 
 from .chat import get_chat_id
 from .ws_manager import ws_manager
@@ -58,5 +59,5 @@ async def chat(websocket: WebSocket):
                         'message': item['snippet']['displayMessage']
                     })
 
-    except WebSocketDisconnect:
+    except ConnectionClosedOK:
         ws_manager.disconnect(websocket)
