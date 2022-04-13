@@ -7,6 +7,7 @@ def on_open(event):
 
 def on_message(event):
     data = window.JSON.parse(event.data)
+
     message = html.DIV("", Class="message")
     message <= html.P(data.name, Class="message__author")
     message <= html.P(data.message, Class="message__content")
@@ -15,6 +16,11 @@ def on_message(event):
     messages <= message
 
     window.scrollTo(0, document.body.scrollHeight)
+
+    messages_size = len(messages.childNodes)
+    if messages_size > 20:
+        messages.removeChild(messages.firstChild)
+
 
 ws = websocket.WebSocket(
     f'ws://{window.location.host}/ws/chat'
