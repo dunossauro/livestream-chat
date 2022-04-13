@@ -22,3 +22,11 @@ async def get_chat_id(video_id=youtube_live_id):
         chat_id = video_info["items"][0]["liveStreamingDetails"]["activeLiveChatId"]
 
     return chat_id
+
+
+def time_to_next_request(items, interval):
+    items_size = len(items)
+    animation_time = items_size * 0.5
+    youtube_interval = interval * 0.001
+    return youtube_interval - animation_time
+

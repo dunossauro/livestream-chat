@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from httpx import AsyncClient
 from websockets.exceptions import ConnectionClosedOK
 
-from .chat import get_chat_id
+from .chat import get_chat_id, time_to_next_request
 from .ws_manager import ws_manager
 
 app = FastAPI()
@@ -51,9 +51,6 @@ async def chat(websocket: WebSocket):
                 if messages['nextPageToken']:
                     params['pageToken'] = messages['nextPageToken']
 
-                if not messages['items']:
-                    await sleep(2)
-
                 for item in messages['items']:
                     await sleep(0.5)
                     await ws_manager.broadcast({
@@ -62,7 +59,11 @@ async def chat(websocket: WebSocket):
                         'message': item['snippet']['displayMessage']
                     })
 
-                await sleep(messages['pollingIntervalMillis'] * 0.001)
+                if (total_time := time_to_next_request(
+                    messages['items'],
+                    messages['pollingIntervalMillis']
+                )) > 0:
+                    await sleep(total_time)
 
     except ConnectionClosedOK:
         ws_manager.disconnect(websocket)
