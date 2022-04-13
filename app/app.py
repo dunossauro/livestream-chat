@@ -48,6 +48,9 @@ async def chat(websocket: WebSocket):
                 response = await client.get(url, params=params)
                 messages = response.json()
 
+                if messages['nextPageToken']:
+                    params['pageToken'] = messages['nextPageToken']
+
                 if not messages['items']:
                     await sleep(2)
 
@@ -58,6 +61,8 @@ async def chat(websocket: WebSocket):
                         'name': item['authorDetails']['displayName'],
                         'message': item['snippet']['displayMessage']
                     })
+
+                await sleep(messages['pollingIntervalMillis'] * 0.001)
 
     except ConnectionClosedOK:
         ws_manager.disconnect(websocket)
