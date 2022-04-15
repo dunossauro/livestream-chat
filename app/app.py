@@ -1,15 +1,13 @@
 from asyncio import sleep
-from os import environ
 
 from fastapi import FastAPI, Request, WebSocket
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from httpx import AsyncClient
 from websockets.exceptions import ConnectionClosedOK
 
-from .chat import get_chat_id, time_to_next_request
 from .ws_manager import ws_manager
+from .youtube_chat import get_chat_id, get_chat_messages
 
 app = FastAPI()
 app.mount('/static', StaticFiles(directory='static'), name='static')
@@ -24,46 +22,34 @@ def home(request: Request):
 
 @app.websocket('/ws/chat')
 async def chat(websocket: WebSocket):
-    await ws_manager.connect(websocket)
+    next_token = None
     chat_id = await get_chat_id()
+    await ws_manager.connect(websocket)
 
-    params = {
-        'part': 'snippet,authorDetails',
-        'key': environ['GOOGLE_API_KEY'],
-        'liveChatId': chat_id,
-        'maxResults': 200,
-    }
-
-    url = BASE_URL.format('liveChat/messages')
+    if not chat_id:
+        await ws_manager.broadcast(
+            {'type': 'error', 'name': 'Error', 'message': 'livechat.id Error!'}
+        )
+        ws_manager.disconnect(websocket)
+        return {'message': 'Error'}
 
     try:
         while True:
-            async with AsyncClient() as client:
-                response = await client.get(url, params=params)
-                messages = response.json()
+            (
+                time_to_next_request,
+                next_token,
+                chat_messages,
+            ) = await get_chat_messages(chat_id, next_token)
 
-                if messages['nextPageToken']:
-                    params['pageToken'] = messages['nextPageToken']
+            for message in chat_messages:
+                await ws_manager.broadcast(message.dict())
+                await sleep(0.5)
 
-                if not messages['items']:
-                    await sleep(5)
+            if not chat_messages:
+                await sleep(5)
 
-                for item in messages['items']:
-                    await sleep(0.5)
-                    await ws_manager.broadcast(
-                        {
-                            'type': item['snippet']['type'],
-                            'name': item['authorDetails']['displayName'],
-                            'message': item['snippet']['displayMessage'],
-                        }
-                    )
-
-                if (
-                    total_time := time_to_next_request(
-                        messages['items'], messages['pollingIntervalMillis']
-                    )
-                ) > 0:
-                    await sleep(total_time)
+            if time_to_next_request > 0:
+                await sleep(time_to_next_request)
 
     except ConnectionClosedOK:
         ws_manager.disconnect(websocket)
