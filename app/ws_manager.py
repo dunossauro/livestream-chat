@@ -13,4 +13,5 @@ class WebSocketManager:
         for con in self.connections:
             await con.send_json(message)
 
+
 ws_manager = WebSocketManager()
