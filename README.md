@@ -16,6 +16,8 @@ Overlay para chats de livestreams. Inicialmente para rodar dentro do browser do 
 - GOOGLE_API_KEY - Sua api do google
 - LIVESTREAM_ID - ID de uma live rolando (código do final da URL)
 
+Você também pode criar um arquivo `.env` e passar as suas variáveis de ambiente para ele.
+
 ## Como rodar o projeto?
 
 ```shell
