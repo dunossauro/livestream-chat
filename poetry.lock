@@ -248,6 +248,21 @@ MarkupSafe = ">=2.0"
 i18n = ["Babel (>=2.7)"]
 
 [[package]]
+name = "loguru"
+version = "0.6.0"
+description = "Python logging made (stupidly) simple"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.dependencies]
+colorama = {version = ">=0.3.4", markers = "sys_platform == \"win32\""}
+win32-setctime = {version = ">=1.0.0", markers = "sys_platform == \"win32\""}
+
+[package.extras]
+dev = ["colorama (>=0.3.4)", "docutils (==0.16)", "flake8 (>=3.7.7)", "tox (>=3.9.0)", "pytest (>=4.6.2)", "pytest-cov (>=2.7.1)", "black (>=19.10b0)", "isort (>=5.1.1)", "Sphinx (>=4.1.1)", "sphinx-autobuild (>=0.7.1)", "sphinx-rtd-theme (>=0.4.3)"]
+
+[[package]]
 name = "mando"
 version = "0.6.4"
 description = "Create Python CLI apps with little to no effort at all!"
@@ -511,6 +526,17 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
+name = "win32-setctime"
+version = "1.1.0"
+description = "A small Python utility to set file creation time on Windows"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.extras]
+dev = ["pytest (>=4.6.2)", "black (>=19.3b0)"]
+
+[[package]]
 name = "xenon"
 version = "0.9.0"
 description = "Monitor code metrics for Python on your CI server"
@@ -526,7 +552,7 @@ requests = ">=2.0,<3.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "99b17dd98488113d7d940137e9a08e0137a33960f692335eb992fae47e963239"
+content-hash = "2bfc430a867f86b8c63a3564a91ace1c347f4668d3fed876b893e8efc239f3d5"
 
 [metadata.files]
 aiofiles = [
@@ -639,6 +665,10 @@ isort = [
 jinja2 = [
     {file = "Jinja2-3.1.1-py3-none-any.whl", hash = "sha256:539835f51a74a69f41b848a9645dbdc35b4f20a3b601e2d9a7e22947b15ff119"},
     {file = "Jinja2-3.1.1.tar.gz", hash = "sha256:640bed4bb501cbd17194b3cace1dc2126f5b619cf068a726b98192a0fde74ae9"},
+]
+loguru = [
+    {file = "loguru-0.6.0-py3-none-any.whl", hash = "sha256:4e2414d534a2ab57573365b3e6d0234dfb1d84b68b7f3b948e6fb743860a77c3"},
+    {file = "loguru-0.6.0.tar.gz", hash = "sha256:066bd06758d0a513e9836fd9c6b5a75bfb3fd36841f4b996bc60b547a309d41c"},
 ]
 mando = [
     {file = "mando-0.6.4-py2.py3-none-any.whl", hash = "sha256:4ce09faec7e5192ffc3c57830e26acba0fd6cd11e1ee81af0d4df0657463bd1c"},
@@ -969,6 +999,10 @@ websockets = [
     {file = "websockets-10.2-pp37-pypy37_pp73-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:0cd02f36d37e503aca88ab23cc0a1a0e92a263d37acf6331521eb38040dcf77b"},
     {file = "websockets-10.2-pp37-pypy37_pp73-win_amd64.whl", hash = "sha256:56d48eebe9e39ce0d68701bce3b21df923aa05dcc00f9fd8300de1df31a7c07c"},
     {file = "websockets-10.2.tar.gz", hash = "sha256:8351c3c86b08156337b0e4ece0e3c5ec3e01fcd14e8950996832a23c99416098"},
+]
+win32-setctime = [
+    {file = "win32_setctime-1.1.0-py3-none-any.whl", hash = "sha256:231db239e959c2fe7eb1d7dc129f11172354f98361c4fa2d6d2d7e278baa8aad"},
+    {file = "win32_setctime-1.1.0.tar.gz", hash = "sha256:15cf5750465118d6929ae4de4eb46e8edae9a5634350c01ba582df868e932cb2"},
 ]
 xenon = [
     {file = "xenon-0.9.0-py2.py3-none-any.whl", hash = "sha256:994c80c7f1c6d40596b600b93734d85a5739208f31895ef99f1e4d362caf9e35"},
