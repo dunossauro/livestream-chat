@@ -2,6 +2,7 @@ from os import environ
 
 from dotenv import load_dotenv
 from httpx import AsyncClient
+from loguru import logger
 from pydantic import BaseModel
 
 load_dotenv()
@@ -31,7 +32,7 @@ async def get_chat_id(video_id: str = youtube_live_id) -> str:
             'activeLiveChatId'
         ]
     except IndexError:
-        ...
+        logger.error('Youtube video ID is wrong or not found.')
 
     return chat_id
 

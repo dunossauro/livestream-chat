@@ -4,6 +4,7 @@ from fastapi import FastAPI, Request, WebSocket
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from loguru import logger
 from websockets.exceptions import ConnectionClosedOK
 
 from .ws_manager import ws_manager
@@ -30,6 +31,7 @@ async def chat(websocket: WebSocket):
         await ws_manager.broadcast(
             {'type': 'error', 'name': 'Error', 'message': 'livechat.id Error!'}
         )
+        logger.error('Socket Closed, error with chat_id.')
         ws_manager.disconnect(websocket)
         return {'message': 'Error'}
 
@@ -41,11 +43,14 @@ async def chat(websocket: WebSocket):
                 chat_messages,
             ) = await get_chat_messages(chat_id, next_token)
 
+            logger.debug(f'{time_to_next_request=}, {next_token=}.')
+
             for message in chat_messages:
                 await ws_manager.broadcast(message.dict())
                 await sleep(0.5)
 
             if not chat_messages:
+                logger.info('Not messages, waiting 5 seconds...')
                 await sleep(5)
 
             if time_to_next_request > 0:
