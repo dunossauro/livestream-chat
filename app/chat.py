@@ -1,4 +1,3 @@
-from asyncio import run, sleep
 from os import environ
 
 from httpx import AsyncClient
