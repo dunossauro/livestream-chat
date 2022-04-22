@@ -80,4 +80,4 @@ async def get_chat_messages(chat_id: str, next_token: str | None = None):
 
     messages_to_socket = format_messages(messages.get('items'))
 
-    return total_time, messages.get('nextPageToken'), messages_to_socket
+    return total_time, messages.get('nextPageToken'), messages_to_socket, len(messages.get('items'))

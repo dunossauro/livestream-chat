@@ -41,6 +41,7 @@ async def chat(websocket: WebSocket):
                 time_to_next_request,
                 next_token,
                 chat_messages,
+                has_messages
             ) = await get_chat_messages(chat_id, next_token)
 
             logger.debug(f'{time_to_next_request=}, {next_token=}.')
@@ -49,7 +50,7 @@ async def chat(websocket: WebSocket):
                 await ws_manager.broadcast(message.dict())
                 await sleep(0.5)
 
-            if not chat_messages:
+            if not has_messages:
                 logger.info('Not messages, waiting 5 seconds...')
                 await sleep(5)
 
