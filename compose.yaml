@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    expose:
+      - "8000"
+    environment:
+      - LIVESTREAM_ID=LIVESTREAM_ID
+      - GOOGLE_API_KEY=GOOGLE_API_KEY
+    env_file: .env
+    network_mode: host
