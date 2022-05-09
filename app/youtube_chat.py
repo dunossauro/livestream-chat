@@ -1,7 +1,7 @@
 from os import environ
 
 from dotenv import load_dotenv
-from httpx import AsyncClient
+from httpx import AsyncClient, TimeoutException
 from loguru import logger
 from pydantic import BaseModel
 
@@ -24,7 +24,7 @@ async def get_chat_id(video_id: str = youtube_live_id) -> str:
     url = BASE_URL.format('videos')
 
     async with AsyncClient() as client:
-        response = await client.get(url, params=params)
+        response = await client.get(url, params=params, timeout=10)
         video_info = response.json()
 
     try:
@@ -71,8 +71,13 @@ async def get_chat_messages(chat_id: str, next_token: str | None = None):
     url = BASE_URL.format('liveChat/messages')
 
     async with AsyncClient() as client:
-        response = await client.get(url, params=params)
-        messages = response.json()
+        try:
+            response = await client.get(url, params=params, timeout=10)
+            messages = response.json()
+        except TimeoutException as exc:
+            logger.error(exc)
+            logger.info('TimeoutException, wait 1 second...')
+            return 1, next_token, [], 0
 
     total_time = time_to_next_request(
         messages['items'], messages['pollingIntervalMillis']
