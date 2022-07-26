@@ -46,7 +46,7 @@ async def chat(websocket: WebSocket):
 
             logger.debug(f'{time_to_next_request=}, {next_token=}.')
 
-            for message in chat_messages:
+            async for message in chat_messages:
                 await ws_manager.broadcast(message.dict())
                 await sleep(0.5)
 
