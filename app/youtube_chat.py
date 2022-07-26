@@ -4,11 +4,16 @@ from dotenv import load_dotenv
 from httpx import AsyncClient, TimeoutException
 from loguru import logger
 from pydantic import BaseModel
+from motor.motor_asyncio import AsyncIOMotorClient
 
 load_dotenv()
 API_KEY = environ['GOOGLE_API_KEY']
+MONGO_URI = environ['MONGO_URI']
 youtube_live_id = environ['LIVESTREAM_ID']
 BASE_URL = 'https://www.googleapis.com/youtube/v3/{}'
+logger.error(environ['LIVESTREAM_ID'])
+logger.error(environ['MONGO_URI'])
+mongo_client = AsyncIOMotorClient(MONGO_URI)
 
 
 class YoutubeChatSchema(BaseModel):
@@ -47,9 +52,17 @@ def time_to_next_request(items: list[dict], interval: float) -> float:
     return youtube_interval - animation_time
 
 
-def format_messages(messages: list[dict]):
-    """Converte a o json confuso do youtube em YoutubeChatSchema."""
+async def format_messages(messages: list[dict]):
+    """
+    Converte a o json confuso do youtube em YoutubeChatSchema.
+
+    Persiste no database 'youtube' todas as mensagens
+    """
     for message in messages:
+
+        db = mongo_client.youtube.chat_messages
+        await db.insert_one(message)
+
         yield YoutubeChatSchema(
             type=message['snippet']['type'],
             name=message['authorDetails']['displayName'],
