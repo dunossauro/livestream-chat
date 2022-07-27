@@ -29,23 +29,6 @@ services:
     networks:
       - mongo-compose-network
 
-  mongo-express:
-    image: mongo-express
-    restart: always
-    ports:
-      - 8081:8081
-    depends_on:
-      - mongodb
-    links:
-      - mongodb
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_SERVER: mongodb
-      ME_CONFIG_MONGODB_PORT: 27017
-    networks:
-      - mongo-compose-network
-
-networks: 
+networks:
     mongo-compose-network:
       driver: bridge
