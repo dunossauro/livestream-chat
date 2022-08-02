@@ -1,19 +1,31 @@
+from logging import INFO
 from os import environ
 
 from dotenv import load_dotenv
 from httpx import AsyncClient, TimeoutException
 from loguru import logger
-from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClient
+from pydantic import BaseModel
+from sentry_sdk import init
+from sentry_sdk.integrations.logging import EventHandler, LoggingIntegration
 
 load_dotenv()
 API_KEY = environ['GOOGLE_API_KEY']
 MONGO_URI = environ['MONGO_URI']
 youtube_live_id = environ['LIVESTREAM_ID']
+sentry_dsn = environ['SENTRY_DSN']
 BASE_URL = 'https://www.googleapis.com/youtube/v3/{}'
-logger.error(environ['LIVESTREAM_ID'])
-logger.error(environ['MONGO_URI'])
+logger.debug(environ['LIVESTREAM_ID'])
+logger.debug(environ['MONGO_URI'])
 mongo_client = AsyncIOMotorClient(MONGO_URI)
+
+init(
+    dsn=sentry_dsn, integrations=[LoggingIntegration()], traces_sample_rate=1.0
+)
+
+logger.add(
+    EventHandler(level=INFO), format='{time} {level} {message}', level='INFO'
+)
 
 
 class YoutubeChatSchema(BaseModel):
@@ -89,13 +101,21 @@ async def get_chat_messages(chat_id: str, next_token: str | None = None):
             messages = response.json()
         except TimeoutException as exc:
             logger.error(exc)
-            logger.info('TimeoutException, wait 1 second...')
+            logger.debug('TimeoutException, wait 1 second...')
             return 1, next_token, [], 0
 
+    # Erro intermitente no messages['items']: Keyerror
+    # Será corigido quando for reproduzido pelo sentry
+    # Olhar sentry.io/organizations/live-de-python/issues/?project=6619854
     total_time = time_to_next_request(
         messages['items'], messages['pollingIntervalMillis']
     )
 
     messages_to_socket = format_messages(messages.get('items'))
 
-    return total_time, messages.get('nextPageToken'), messages_to_socket, len(messages.get('items'))
+    return (
+        total_time,
+        messages.get('nextPageToken'),
+        messages_to_socket,
+        len(messages.get('items')),
+    )
