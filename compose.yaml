@@ -13,6 +13,8 @@ services:
       - LIVESTREAM_ID=${LIVESTREAM_ID}
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - MONGO_URI=${MONGO_URI}
+    volumes:
+      - './data:/data'
     networks:
       - mongo-compose-network
 

@@ -19,6 +19,13 @@ logger.debug(environ['LIVESTREAM_ID'])
 logger.debug(environ['MONGO_URI'])
 mongo_client = AsyncIOMotorClient(MONGO_URI)
 
+logger.add(
+    'data/livechat_log.log',
+    rotation='1 week',
+    format='{time} {level} {message}',
+    level='DEBUG',
+)
+
 init(
     dsn=sentry_dsn, integrations=[LoggingIntegration()], traces_sample_rate=1.0
 )
