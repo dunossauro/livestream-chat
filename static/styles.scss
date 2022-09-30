@@ -25,6 +25,61 @@ body {
   );
 
   p {
+      margin: 0;
+  }
+
+  .message__author {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+}
+
+.superchat {
+  color: #fff;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  @include pixel-box(
+          $corner-size: 1,
+          $border-size: 4px,
+          $border-color: #fff,
+          $background-color: #F80,
+          $border-inset: true,
+          $border-inset-size: false,
+          $border-inset-color: true,
+          $border-inset-sides: false, // Sides to apply inset border: 'all', 'top-left' or 'bottom-right'
+          $border-inset-color-br: false, // Bottom right inset border colour
+          $border-inset-color-tl: false // Top left inset border colour
+  );
+
+  p {
+      margin: 0;
+      color:  #000;
+  }
+
+  .message__author {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+}
+
+.newsponsor {
+  color: #fff;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  @include pixel-box(
+          $corner-size: 1,
+          $border-size: 4px,
+          $border-color: #fff,
+          $background-color: #080,
+          $border-inset: true,
+          $border-inset-size: false,
+          $border-inset-color: true,
+          $border-inset-sides: false, // Sides to apply inset border: 'all', 'top-left' or 'bottom-right'
+          $border-inset-color-br: false, // Bottom right inset border colour
+          $border-inset-color-tl: false // Top left inset border colour
+  );
+
+  p {
     margin: 0;
   }
 

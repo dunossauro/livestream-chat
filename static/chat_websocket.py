@@ -1,5 +1,12 @@
 from browser import websocket, window, document, html
 
+message_types = {
+    # message_type: css_class
+    'textMessageEvent': 'message',
+    'superChatEvent': 'superchat',
+    'superStickerEvent': 'newsponsor',
+    'newSponsorEvent': 'newsponsor'
+}
 
 def on_open(event):
     ws.send(f'Teste!')
@@ -8,7 +15,7 @@ def on_open(event):
 def on_message(event):
     data = window.JSON.parse(event.data)
 
-    message = html.DIV("", Class="message")
+    message = html.DIV("", Class=message_types[data.type])
     message <= html.P(data.name, Class="message__author")
     message <= html.P(data.message, Class="message__content")
 
