@@ -109,7 +109,7 @@ async def get_chat_messages(chat_id: str, next_token: str | None = None):
         except TimeoutException as exc:
             logger.error(exc)
             logger.debug('TimeoutException, wait 1 second...')
-            return 1, next_token, [], 0
+            return 1, next_token, format_messages([]), 0
 
     # Erro intermitente no messages['items']: Keyerror
     # Será corigido quando for reproduzido pelo sentry
