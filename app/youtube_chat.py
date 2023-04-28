@@ -116,12 +116,14 @@ async def get_chat_messages(
             logger.debug('TimeoutException, wait 1 second...')
             return 1, next_token, format_messages([]), 0
 
-    # Erro intermitente no messages['items']: Keyerror
-    # Será corigido quando for reproduzido pelo sentry
-    # Olhar sentry.io/organizations/live-de-python/issues/?project=6619854
-    total_time = time_to_next_request(
-        messages['items'], messages['pollingIntervalMillis']
-    )
+    try:
+        total_time = time_to_next_request(
+            messages['items'], messages['pollingIntervalMillis']
+        )
+    except Exception as exc:
+        logger.error(exc)
+        logger.error(messages)
+        return 1, next_token, format_messages([]), 5
 
     messages_to_socket = format_messages(messages.get('items'))
 

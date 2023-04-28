@@ -1,3 +1,6 @@
+from websockets.exceptions import ConnectionClosedOK
+
+
 class WebSocketManager:
     def __init__(self):
         self.connections = []
@@ -11,7 +14,10 @@ class WebSocketManager:
 
     async def broadcast(self, message):
         for con in self.connections:
-            await con.send_json(message)
+            try:
+                await con.send_json(message)
+            except ConnectionClosedOK:
+                self.disconnect(con)
 
 
 ws_manager = WebSocketManager()
