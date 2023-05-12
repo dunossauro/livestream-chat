@@ -1,5 +1,6 @@
 from logging import INFO
 from os import environ
+from typing import AsyncGenerator
 
 from dotenv import load_dotenv
 from httpx import AsyncClient, TimeoutException
@@ -71,7 +72,9 @@ def time_to_next_request(items: list[dict], interval: float) -> float:
     return youtube_interval - animation_time
 
 
-async def format_messages(messages: list[dict]):
+async def format_messages(
+    messages: list[dict],
+) -> AsyncGenerator[YoutubeChatSchema, None]:
     """
     Converte a o json confuso do youtube em YoutubeChatSchema.
 
@@ -89,7 +92,9 @@ async def format_messages(messages: list[dict]):
         )
 
 
-async def get_chat_messages(chat_id: str, next_token: str | None = None):
+async def get_chat_messages(
+    chat_id: str, next_token: str | None = None
+) -> tuple[float, str | None, AsyncGenerator[YoutubeChatSchema, None], int]:
     params = {
         'part': 'snippet,authorDetails',
         'key': environ['GOOGLE_API_KEY'],
@@ -111,12 +116,14 @@ async def get_chat_messages(chat_id: str, next_token: str | None = None):
             logger.debug('TimeoutException, wait 1 second...')
             return 1, next_token, format_messages([]), 0
 
-    # Erro intermitente no messages['items']: Keyerror
-    # Será corigido quando for reproduzido pelo sentry
-    # Olhar sentry.io/organizations/live-de-python/issues/?project=6619854
-    total_time = time_to_next_request(
-        messages['items'], messages['pollingIntervalMillis']
-    )
+    try:
+        total_time = time_to_next_request(
+            messages['items'], messages['pollingIntervalMillis']
+        )
+    except Exception as exc:
+        logger.error(exc)
+        logger.error(messages)
+        return 1, next_token, format_messages([]), 5
 
     messages_to_socket = format_messages(messages.get('items'))
 
