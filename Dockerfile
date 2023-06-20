@@ -6,4 +6,4 @@ COPY . .
 RUN pip install poetry
 RUN poetry install
 EXPOSE 8000
-CMD [ "uvicorn", "--host", "0.0.0.0", "app.app:app" ]
+CMD [ "poetry", "run", "uvicorn", "--host", "0.0.0.0", "app.app:app" ]
