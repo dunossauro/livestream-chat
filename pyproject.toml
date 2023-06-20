@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "youtube_chat"
+name = "livestream-chat"
 version = "0.1.0"
 description = ""
 authors = ["dunossauro <mendesxeduardo@gmail.com>"]
@@ -15,6 +15,7 @@ python-dotenv = "^0.20.0"
 loguru = "^0.6.0"
 motor = "^3.0.0"
 sentry-sdk = "^1.9.0"
+twitchio = "^2.6.0"
 
 [tool.poetry.dev-dependencies]
 blue = "^0.8.0"
