@@ -1,5 +1,7 @@
 from websockets.exceptions import ConnectionClosedOK
 
+from .schemas import ChatSchema
+
 
 class WebSocketManager:
     def __init__(self):
@@ -12,7 +14,7 @@ class WebSocketManager:
     def disconnect(self, websocket):
         self.connections.remove(websocket)
 
-    async def broadcast(self, message):
+    async def broadcast(self, message: ChatSchema):
         for con in self.connections:
             try:
                 await con.send_json(message)

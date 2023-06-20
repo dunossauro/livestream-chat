@@ -1,5 +1,7 @@
 from asyncio import get_event_loop, sleep
+from os import environ
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, Request, WebSocket
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -7,55 +9,36 @@ from fastapi.templating import Jinja2Templates
 from loguru import logger
 from websockets.exceptions import ConnectionClosedOK
 
+from .twitch_bot import Bot
 from .ws_manager import ws_manager
-from .youtube_chat import get_chat_id, get_chat_messages
+from .youtube_chat import chat_ws_task, get_chat_id
 
+load_dotenv()
 app = FastAPI()
 app.mount('/static', StaticFiles(directory='static'), name='static')
 templates = Jinja2Templates(directory='templates')
 
 
-async def chat_ws_task(chat_id: str, next_token: str | None = None):
-    if ws_manager.connections:
-        (
-            time_to_next_request,
-            next_token,
-            chat_messages,
-            has_messages,
-        ) = await get_chat_messages(chat_id, next_token)
-
-        logger.debug(f'{time_to_next_request=}, {next_token=}.')
-
-        async for message in chat_messages:
-            await ws_manager.broadcast(message.dict())
-
-        if not has_messages:
-            logger.debug('Not messages, waiting 5 seconds...')
-            await sleep(5)
-
-        if time_to_next_request > 0:
-            logger.debug(f'TIME TO NEXT {time_to_next_request}')
-            await sleep(time_to_next_request)
-        else:
-            await sleep(1)
-    else:
-        logger.debug('WAITING SOCKETSSSSS')
-        await sleep(5)
-
-    await loop.create_task(chat_ws_task(chat_id, next_token))
-
-
 @app.on_event('startup')
 async def start_socket():
-    global loop
-
-    chat_id = await get_chat_id()
-
-    if not chat_id:
-        raise BlockingIOError('Youtube API error to connect!')
-
     loop = get_event_loop()
-    loop.create_task(chat_ws_task(chat_id))
+
+    services = environ['SERVICES'].split(',')
+
+    logger.critical(services)
+
+    if 'youtube' in services:
+        chat_id = await get_chat_id()
+
+        if not chat_id:
+            raise BlockingIOError('Youtube API error to connect!')
+
+        loop.create_task(
+            chat_ws_task(chat_id, loop=loop, ws_manager=ws_manager)
+        )
+
+    if 'twitch' in services:
+        loop.create_task(Bot(loop, ws_manager).start())
 
 
 @app.get('/', response_class=HTMLResponse)
