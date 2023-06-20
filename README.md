@@ -7,22 +7,31 @@ Overlay para chats de livestreams. Inicialmente para rodar dentro do browser do 
 ## TODO:
 
 - [ ] [Issues iniciais](https://github.com/dunossauro/livestream-chat/issues)
-- [ ] Suporte a API do Youtube
-- [ ] Suporte a API da Twitch
+- [ ] Suportar [emotes da twitch](https://www.npmjs.com/package/@mkody/twitch-emoticons)
+- [ ] Refresh no socket (front)
+- [ ] Capturar e exibir de forma diferente as mensagens da twitch
 
 
 ## Colocar as duas variáveis de ambiente
 
-- GOOGLE_API_KEY - Sua api do google
+
 - LIVESTREAM_ID - ID de uma live rolando (código do final da URL)
 
-Você também pode criar um arquivo `.env` e passar as suas variáveis de ambiente para ele.
+- SERVICES - "youtube,twitch"
+- YOUTUBE_LIVESTREAM_ID - ID de uma live rolando (código do final da URL)
+- GOOGLE_API_KEY - Sua api do google
+- TWITCH_TOKEN="oauth:..."
+- SENTRY_DSN="https://...@....ingest.sentry.io/..."
+- MONGO_URI="mongodb://root:example@mongodb:27017"
+- MONGO_USERNAME="root"
+- MONGO_PASSWORD="example"
+
+Você também pode criar um arquivo `.env` e passar as suas variáveis de ambiente para ele. Existe um exemplo [aqui](/.dotenv.txt)
 
 ## Como rodar o projeto?
 
 ```shell
-poetry install
-poetry run uvicorn app.app:app
+docker-compose up
 ```
 
 ## Como editar os estilos?
