@@ -9,10 +9,7 @@ services:
       - 8000:8000
     expose:
       - 8000
-    environment:
-      - LIVESTREAM_ID=${LIVESTREAM_ID}
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
-      - MONGO_URI=${MONGO_URI}
+    env_file: '.env'
     volumes:
       - './data:/data'
     networks:

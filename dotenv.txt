@@ -1,2 +1,11 @@
-LIVESTREAM_ID="YOUR_LIVESTREAM_ID"
+SERVICES="youtube,twitch"
+
+YOUTUBE_LIVESTREAM_ID="YOUR_LIVESTREAM_ID"
+TWITCH_TOKEN="oauth:..."
 GOOGLE_API_KEY="YOUR_GOOGLE_API_KEY"
+
+SENTRY_DSN="https://...@....ingest.sentry.io/..."
+
+MONGO_URI="mongodb://root:example@mongodb:27017"
+MONGO_USERNAME="root"
+MONGO_PASSWORD="example"
