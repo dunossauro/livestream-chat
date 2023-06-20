@@ -28,7 +28,9 @@ logger.add(
 )
 
 init(
-    dsn=environ['SENTRY_DSN'], integrations=[LoggingIntegration()], traces_sample_rate=1.0
+    dsn=environ['SENTRY_DSN'],
+    integrations=[LoggingIntegration()],
+    traces_sample_rate=1.0,
 )
 
 logger.add(
