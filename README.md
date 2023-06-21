@@ -21,12 +21,9 @@ Overlay para chats de livestreams. Inicialmente para rodar dentro do browser do 
 - YOUTUBE_LIVESTREAM_ID - ID de uma live rolando (código do final da URL)
 - GOOGLE_API_KEY - Sua api do google
 - TWITCH_TOKEN="oauth:..."
-- SENTRY_DSN="https://...@....ingest.sentry.io/..."
-- MONGO_URI="mongodb://root:example@mongodb:27017"
-- MONGO_USERNAME="root"
-- MONGO_PASSWORD="example"
+- SENTRY_DSN="https://...@....ingest.sentry.io/..." **OPCIONAL**
 
-Você também pode criar um arquivo `.env` e passar as suas variáveis de ambiente para ele. Existe um exemplo [aqui](/.dotenv.txt)
+Você também pode criar um arquivo `.env` e passar as suas variáveis de ambiente para ele. Existe um exemplo [aqui](dotenv.txt)
 
 ## Como rodar o projeto?
 

@@ -6,7 +6,6 @@ from fastapi import FastAPI, Request, WebSocket
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from loguru import logger
 from websockets.exceptions import ConnectionClosedOK
 
 from .twitch_bot import Bot
@@ -24,8 +23,6 @@ async def start_socket():
     loop = get_event_loop()
 
     services = environ['SERVICES'].split(',')
-
-    logger.critical(services)
 
     if 'youtube' in services:
         chat_id = await get_chat_id()

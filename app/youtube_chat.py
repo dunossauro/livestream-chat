@@ -1,15 +1,11 @@
 from asyncio import AbstractEventLoop, sleep
-from logging import INFO
 from os import environ
 from typing import AsyncGenerator
 
 from dotenv import load_dotenv
 from httpx import AsyncClient, TimeoutException
-from loguru import logger
-from motor.motor_asyncio import AsyncIOMotorClient
-from sentry_sdk import init
-from sentry_sdk.integrations.logging import EventHandler, LoggingIntegration
 
+from .logger import logger
 from .schemas import ChatSchema
 from .ws_manager import WebSocketManager
 
@@ -18,24 +14,6 @@ API_KEY = environ['GOOGLE_API_KEY']
 youtube_live_id = environ['YOUTUBE_LIVESTREAM_ID']
 
 BASE_URL = 'https://www.googleapis.com/youtube/v3/{}'
-mongo_client = AsyncIOMotorClient(environ['MONGO_URI'])
-
-logger.add(
-    'data/livechat_log.log',
-    rotation='1 week',
-    format='{time} {level} {message}',
-    level='DEBUG',
-)
-
-init(
-    dsn=environ['SENTRY_DSN'],
-    integrations=[LoggingIntegration()],
-    traces_sample_rate=1.0,
-)
-
-logger.add(
-    EventHandler(level=INFO), format='{time} {level} {message}', level='INFO'
-)
 
 
 async def get_chat_id(video_id: str = youtube_live_id) -> str:
@@ -62,24 +40,22 @@ async def get_chat_id(video_id: str = youtube_live_id) -> str:
 
 
 def time_to_next_request(items: list[dict], interval: float) -> float:
+    """
+    Tempo para o próximo request na API do youtube.
+
+    A conta é feita com relação ao tempo que a API responde - o
+        tempo que leva cada animação na tela somado com .5 s
+    """
     items_size = len(items)
     animation_time = items_size * 0.5
-    youtube_interval = interval * 0.001
-    return youtube_interval - animation_time
+    return interval - animation_time + 0.5
 
 
 async def format_messages(
     messages: list[dict],
 ) -> AsyncGenerator[ChatSchema, None]:
-    """
-    Converte a o json confuso do youtube em YoutubeChatSchema.
-
-    Persiste no database 'youtube' todas as mensagens
-    """
+    """Converte a o json confuso do youtube em YoutubeChatSchema."""
     for message in messages:
-
-        db = mongo_client.youtube.chat_messages
-        await db.insert_one(message)
 
         yield ChatSchema(
             type=message['snippet']['type'],
@@ -93,7 +69,7 @@ async def get_chat_messages(
 ) -> tuple[float, str | None, AsyncGenerator[ChatSchema, None], int]:
     params = {
         'part': 'snippet,authorDetails',
-        'key': environ['GOOGLE_API_KEY'],
+        'key': API_KEY,
         'liveChatId': chat_id,
         'maxResults': 200,
     }

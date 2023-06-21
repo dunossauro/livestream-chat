@@ -3,8 +3,6 @@ version: '3.1'
 services:
   app:
     build: .
-    depends_on:
-      - mongodb
     ports:
       - 8000:8000
     expose:
@@ -12,22 +10,3 @@ services:
     env_file: '.env'
     volumes:
       - './data:/data'
-    networks:
-      - mongo-compose-network
-
-  mongodb:
-    image: mongo
-    restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
-    ports:
-      - 27017:27017
-    volumes:
-      - './data:/data/db'
-    networks:
-      - mongo-compose-network
-
-networks:
-    mongo-compose-network:
-      driver: bridge
