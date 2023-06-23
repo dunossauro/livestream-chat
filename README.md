@@ -51,3 +51,17 @@ npm run compile-sass
 ```
 
 Caso queira editar as bordas e cores da mensagem, veja a documentação das variáveis usadas no SCSS [desse projeto aqui](https://nigelotoole.github.io/pixel-borders/) e mude o que quiser no `@include` feito na classe `.message`.
+
+## Instalar git hooks para desenvolvimento
+
+```shell
+poetry shell
+poetry install
+pre-commit install
+pre-commit install --hook-type commit-msg
+```
+
+Para atualizar os hooks com base na ultima tag do repo:
+```shell
+pre-commit autoupdate
+```
