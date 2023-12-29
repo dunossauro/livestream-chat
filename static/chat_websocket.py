@@ -1,23 +1,20 @@
-from browser import websocket, window, document, html
+from browser import ajax, document, html, timer, websocket, window
 
 message_types = {
     # message_type: css_class
     'textMessageEvent': 'message',
     'superChatEvent': 'superchat',
     'superStickerEvent': 'newsponsor',
-    'newSponsorEvent': 'newsponsor'
+    'newSponsorEvent': 'newsponsor',
 }
-
-def on_open(event):
-    ws.send(f'Teste!')
 
 
 def on_message(event):
     data = window.JSON.parse(event.data)
 
-    message = html.DIV("", Class=message_types[data.type])
-    message <= html.P(data.name, Class="message__author")
-    message <= html.P(data.message, Class="message__content")
+    message = html.DIV('', Class=message_types[data.type])
+    message <= html.P(data.name, Class='message__author')
+    message <= html.P(data.message, Class='message__content')
 
     messages = document['messages']
     messages <= message
@@ -29,9 +26,26 @@ def on_message(event):
         messages.removeChild(messages.firstChild)
 
 
-ws = websocket.WebSocket(
-    f'ws://{window.location.host}/ws/chat'
-)
+def check_server_up(event=None):
+    def on_complete(request):
+        if request.status == 200:
+            start_ws()
 
-ws.bind('message', on_message)
-ws.bind('open', on_open)
+    try:
+        ajax.get(
+            f'http://{window.location.host}/health',
+            oncomplete=on_complete,
+            blocking=True,
+        )
+    except Exception as ex:
+        timer.set_timeout(check_server_up, 5_000)
+
+
+def start_ws():
+    ws = websocket.WebSocket(f'ws://{window.location.host}/ws/chat')
+
+    ws.bind('message', on_message)
+    ws.bind('close', check_server_up)
+
+
+check_server_up()

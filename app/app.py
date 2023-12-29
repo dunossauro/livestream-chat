@@ -38,6 +38,11 @@ async def start_socket():
         loop.create_task(Bot(loop, ws_manager).start())
 
 
+@app.get('/health')
+def health():
+    return {'status': 'OK'}
+
+
 @app.get('/', response_class=HTMLResponse)
 def home(request: Request):
     return templates.TemplateResponse('chat.html', {'request': request})
