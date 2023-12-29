@@ -46,9 +46,13 @@ def time_to_next_request(items: list[dict], interval: float) -> float:
     A conta é feita com relação ao tempo que a API responde - o
         tempo que leva cada animação na tela somado com .5 s
     """
+    if not items:
+        return interval
+
     items_size = len(items)
     animation_time = items_size * 0.5
-    return interval - animation_time + 0.5
+    youtube_interval = interval * 1.001
+    return youtube_interval - animation_time
 
 
 async def format_messages(
@@ -95,7 +99,7 @@ async def get_chat_messages(
     except Exception as exc:
         logger.error(exc)
         logger.error(messages)
-        return 1, next_token, format_messages([]), 5
+        return 1, next_token, format_messages([]), 0
 
     messages_to_socket = format_messages(messages.get('items'))
 
