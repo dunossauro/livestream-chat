@@ -15,8 +15,6 @@ python-dotenv = "^0.20.0"
 loguru = "^0.6.0"
 sentry-sdk = "^1.9.0"
 twitchio = "^2.6.0"
-pytest = "^7.4.3"
-pytest-cov = "^4.1.0"
 
 [tool.poetry.group.dev.dependencies]
 blue = "^0.9.1"
@@ -26,6 +24,8 @@ taskipy = "^1.11.0"
 ruff = "^0.0.274"
 pytest-asyncio = "^0.23.2"
 respx = "^0.20.2"
+pytest = "^7.4.3"
+pytest-cov = "^4.1.0"
 
 [tool.taskipy.tasks]
 lint = 'isort --check app && blue --check app && ruff app'
