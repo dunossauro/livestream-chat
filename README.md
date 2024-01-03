@@ -6,10 +6,10 @@ Overlay para chats de livestreams. Inicialmente para rodar dentro do browser do 
 
 ## TODO:
 
-- [ ] [Issues iniciais](https://github.com/dunossauro/livestream-chat/issues)
+- [x] [Issues iniciais](https://github.com/dunossauro/livestream-chat/issues)
 - [ ] Suportar [emotes da twitch](https://www.npmjs.com/package/@mkody/twitch-emoticons)
-- [ ] Refresh no socket (front)
-- [ ] Capturar e exibir de forma diferente as mensagens da twitch
+- [x] Refresh no socket (front)
+- [x] Capturar e exibir de forma diferente as mensagens da twitch
 
 
 ## Colocar as duas variáveis de ambiente
