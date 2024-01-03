@@ -3,14 +3,15 @@ name = "livestream-chat"
 version = "0.1.0"
 description = ""
 authors = ["dunossauro <mendesxeduardo@gmail.com>"]
+packages = [{include = "app"}]
 
 [tool.poetry.dependencies]
-python = "^3.10"
-fastapi = "^0.100.1"
-uvicorn = {extras = ["standard"], version = "^0.17.6"}
+python = "^3.11"
+fastapi = "^0.108.0"
+uvicorn = {extras = ["standard"], version = "^0.25.0"}
 aiofiles = "^0.8.0"
 Jinja2 = "^3.1.1"
-httpx = "^0.22.0"
+httpx = "^0.26.0"
 python-dotenv = "^0.20.0"
 loguru = "^0.6.0"
 sentry-sdk = "^1.9.0"
@@ -21,16 +22,49 @@ blue = "^0.9.1"
 isort = "^5.10.1"
 xenon = "^0.9.0"
 taskipy = "^1.11.0"
-ruff = "^0.0.274"
+ruff = "^0.1.9"
 pytest-asyncio = "^0.23.2"
 respx = "^0.20.2"
 pytest = "^7.4.3"
 pytest-cov = "^4.1.0"
+safety = "^2.3.5"
+mypy-extensions = "^1.0.0"
 
 [tool.taskipy.tasks]
 lint = 'isort --check app && blue --check app && ruff app'
 test = 'pytest --cov=app -vv'
 post_test = 'coverage html'
+mypy = 'mypy . --ignore-missing-imports --check-untyped-defs'
+
+[tool.ruff]
+line-length = 79
+indent-width = 4
+
+[tool.ruff.format]
+indent-style = 'space'
+
+[tool.ruff.lint.per-file-ignores]
+"app.py" = ['ANN201', 'B008']
+'tests/*' = ['S101', 'S105', 'ANN201', 'INP001', 'PLR2004']
+'static/*' = ['B015', 'ANN201', 'ANN001', 'ARG001', 'INP001', 'ANN202', 'PLR2004']
+
+[tool.ruff.lint.flake8-quotes]
+inline-quotes = 'single'
+
+[tool.ruff.lint]
+select = ['ALL']
+ignore = [
+    'D100',
+    'D101',
+    'D102',
+    'D103',
+    'D104',
+    'D107',
+    'FA102',
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 [tool.isort]
 profile = 'black'

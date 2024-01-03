@@ -1,23 +1,37 @@
+from typing import Literal, Self, TypedDict
+
 from websockets.exceptions import ConnectionClosedOK
+
+from .logger import logger
+from .schemas import TypeMessages, WSClient
+
+
+class WSMessage(TypedDict):
+    name: str
+    type: TypeMessages
+    message: str
+    channel: Literal['messages', 'event']
 
 
 class WebSocketManager:
-    def __init__(self):
-        self.connections = []
+    def __init__(self: Self) -> None:
+        self.connections: list[WSClient] = []
 
-    async def connect(self, websocket):
-        await websocket.accept()
+    async def connect(self: Self, websocket: WSClient) -> None:
+        await websocket['web_socket'].accept()
         self.connections.append(websocket)
 
-    def disconnect(self, websocket):
+    def disconnect(self: Self, websocket: WSClient) -> None:
         self.connections.remove(websocket)
 
-    async def broadcast(self, message: dict[str, str]):
+    async def broadcast(self: Self, message: WSMessage) -> None:
         for con in self.connections:
-            try:
-                await con.send_json(message)
-            except ConnectionClosedOK:
-                self.disconnect(con)
+            if message['channel'] == con['channel']:
+                try:
+                    await con['web_socket'].send_json(message)
+                except ConnectionClosedOK:
+                    logger.info(f'Desconectando: {con}')
+                    self.disconnect(con)
 
 
 ws_manager = WebSocketManager()

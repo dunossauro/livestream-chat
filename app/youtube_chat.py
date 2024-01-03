@@ -6,8 +6,7 @@ from dotenv import load_dotenv
 from httpx import AsyncClient, TimeoutException
 
 from .logger import logger
-from .schemas import ChatSchema
-from .ws_manager import WebSocketManager
+from .ws_manager import WebSocketManager, WSMessage
 
 load_dotenv()
 API_KEY = environ['GOOGLE_API_KEY']
@@ -39,38 +38,24 @@ async def get_chat_id(video_id: str = youtube_live_id) -> str:
     return chat_id
 
 
-def time_to_next_request(items: list[dict], interval: float) -> float:
-    """
-    Tempo para o próximo request na API do youtube.
-
-    A conta é feita com relação ao tempo que a API responde - o
-        tempo que leva cada animação na tela somado com .5 s
-    """
-    if not items:
-        return interval
-
-    items_size = len(items)
-    animation_time = items_size * 0.5
-    youtube_interval = interval * 1.001
-    return youtube_interval - animation_time
-
-
 async def format_messages(
     messages: list[dict],
-) -> AsyncGenerator[ChatSchema, None]:
+) -> AsyncGenerator[WSMessage, None]:
     """Converte a o json confuso do youtube em YoutubeChatSchema."""
     for message in messages:
 
-        yield ChatSchema(
-            type=message['snippet']['type'],
-            name=message['authorDetails']['displayName'],
-            message=message['snippet']['displayMessage'],
-        )
+        yield {
+            'type': message['snippet']['type'],
+            'name': message['authorDetails']['displayName'],
+            'message': message['snippet']['displayMessage'],
+            'channel': 'messages',
+        }
 
 
 async def get_chat_messages(
-    chat_id: str, next_token: str | None = None
-) -> tuple[float, str | None, AsyncGenerator[ChatSchema, None], int]:
+    chat_id: str,
+    next_token: str | None = None,
+) -> tuple[float, str | None, AsyncGenerator[WSMessage, None], int]:
     params = {
         'part': 'snippet,authorDetails',
         'key': API_KEY,
@@ -93,9 +78,7 @@ async def get_chat_messages(
             return 1, next_token, format_messages([]), 0
 
     try:
-        total_time = time_to_next_request(
-            messages['items'], messages['pollingIntervalMillis']
-        )
+        total_time = messages['pollingIntervalMillis'] / 1_000
     except Exception as exc:
         logger.error(exc)
         logger.error(messages)
@@ -117,7 +100,7 @@ async def chat_ws_task(
     *,
     loop: AbstractEventLoop,
     ws_manager: WebSocketManager,
-):
+) -> None:
     if ws_manager.connections:
         (
             time_to_next_request,
@@ -129,7 +112,7 @@ async def chat_ws_task(
         logger.debug(f'{time_to_next_request=}, {next_token=}.')
 
         async for message in chat_messages:
-            await ws_manager.broadcast(message.dict())
+            await ws_manager.broadcast(message)
 
         if not has_messages:
             logger.debug('Not messages, waiting 5 seconds...')
@@ -145,5 +128,5 @@ async def chat_ws_task(
         await sleep(5)
 
     await loop.create_task(
-        chat_ws_task(chat_id, next_token, loop=loop, ws_manager=ws_manager)
+        chat_ws_task(chat_id, next_token, loop=loop, ws_manager=ws_manager),
     )

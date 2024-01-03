@@ -1,15 +1,22 @@
+from asyncio import AbstractEventLoop
 from os import environ
+from typing import Self
 
 from dotenv import load_dotenv
+from twitchio import Message
 from twitchio.ext import commands
 
-from .schemas import ChatSchema
+from .ws_manager import WebSocketManager
 
 load_dotenv()
 
 
 class Bot(commands.Bot):
-    def __init__(self, loop, ws):
+    def __init__(
+        self: Self,
+        loop: AbstractEventLoop,
+        ws: WebSocketManager,
+    ) -> None:
         self.loop = loop
         self.ws_manager = ws
 
@@ -19,7 +26,12 @@ class Bot(commands.Bot):
             initial_channels=['dunossauro'],
         )
 
-    async def event_message(self, message):
-        message = ChatSchema(name=message.author.name, message=message.content)
-
-        await self.ws_manager.broadcast(message.dict())
+    async def event_message(self: Self, message: Message) -> None:
+        await self.ws_manager.broadcast(
+            {
+                'name': message.author.name,
+                'message': message.content,
+                'type': 'textMessageEvent',
+                'channel': 'messages',
+            },
+        )

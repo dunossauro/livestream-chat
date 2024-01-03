@@ -1,10 +1,10 @@
-from pytest import fixture
+import pytest
 from fastapi.testclient import TestClient
 
 from app.app import app
 
 
-@fixture
+@pytest.fixture()
 def client():
     app.router.on_startup = []
 

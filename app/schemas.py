@@ -1,5 +1,6 @@
 from typing import Literal, TypeAlias, TypedDict
 
+from fastapi.websockets import WebSocket
 from pydantic import BaseModel
 
 TypeMessages: TypeAlias = Literal[
@@ -10,8 +11,12 @@ TypeMessages: TypeAlias = Literal[
 ]
 
 
-class ChatSchema(BaseModel):
-    type: TypeMessages = 'textMessageEvent'
+class WSClient(TypedDict):
+    web_socket: WebSocket
+    channel: Literal['messages', 'event']
+
+
+class HighlightSchema(BaseModel):
     name: str
     message: str
 

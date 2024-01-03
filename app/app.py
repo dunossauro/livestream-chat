@@ -1,5 +1,7 @@
 from asyncio import get_event_loop, sleep
+from contextlib import asynccontextmanager
 from os import environ
+from typing import Literal
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request, WebSocket
@@ -8,20 +10,18 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from websockets.exceptions import ConnectionClosedOK
 
+from .logger import logger
+from .schemas import HighlightSchema, WSClient
 from .twitch_bot import Bot
 from .ws_manager import ws_manager
 from .youtube_chat import chat_ws_task, get_chat_id
 
 load_dotenv()
-app = FastAPI()
-app.mount('/static', StaticFiles(directory='static'), name='static')
-templates = Jinja2Templates(directory='templates')
 
 
-@app.on_event('startup')
-async def start_socket():
+@asynccontextmanager
+async def start_socket(app: FastAPI):
     loop = get_event_loop()
-
     services = environ['SERVICES'].split(',')
 
     if 'youtube' in services:
@@ -31,15 +31,38 @@ async def start_socket():
             raise BlockingIOError('Youtube API error to connect!')
 
         loop.create_task(
-            chat_ws_task(chat_id, loop=loop, ws_manager=ws_manager)
+            chat_ws_task(chat_id, loop=loop, ws_manager=ws_manager),
         )
 
     if 'twitch' in services:
         loop.create_task(Bot(loop, ws_manager).start())
 
+    yield
+
+
+app = FastAPI(lifespan=start_socket)
+app.mount('/static', StaticFiles(directory='static'), name='static')
+templates = Jinja2Templates(directory='templates')
+
 
 @app.get('/health')
 def health():
+    return {'status': 'OK'}
+
+
+@app.post('/highlight', status_code=201)
+async def highlight(data: HighlightSchema):
+    try:
+        await ws_manager.broadcast(
+            {
+                'message': data.message,
+                'channel': 'event',
+                'name': data.name,
+                'type': 'textMessageEvent',
+            },
+        )
+    except Exception as ex:
+        logger.critical(f'Deu ex: {ex}')
     return {'status': 'OK'}
 
 
@@ -48,13 +71,19 @@ def home(request: Request):
     return templates.TemplateResponse('chat.html', {'request': request})
 
 
-@app.websocket('/ws/chat')
-async def chat(websocket: WebSocket):
-    await ws_manager.connect(websocket)
+@app.get('/highlight', response_class=HTMLResponse)
+def highlight_view(request: Request):
+    return templates.TemplateResponse('highlight.html', {'request': request})
+
+
+@app.websocket('/ws/chat/{channel}')
+async def chat(websocket: WebSocket, channel: Literal['messages', 'event']):
+    ws: WSClient = {'web_socket': websocket, 'channel': channel}
+    await ws_manager.connect(ws)
 
     try:
         while True:
             await sleep(10)
 
     except ConnectionClosedOK:
-        ws_manager.disconnect(websocket)
+        ws_manager.disconnect(ws)
