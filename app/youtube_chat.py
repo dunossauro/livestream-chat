@@ -5,7 +5,9 @@ from typing import AsyncGenerator
 from dotenv import load_dotenv
 from httpx import AsyncClient, TimeoutException
 
+from .database import async_session
 from .logger import logger
+from .models import Comment
 from .ws_manager import WebSocketManager, WSMessage
 
 load_dotenv()
@@ -50,6 +52,15 @@ async def format_messages(
             'message': message['snippet']['displayMessage'],
             'channel': 'messages',
         }
+        async with async_session() as session:
+            session.add(
+                Comment(
+                    name=message['authorDetails']['displayName'],
+                    comment=message['snippet']['displayMessage'],
+                    live='youtube',
+                )
+            )
+            await session.commit()
 
 
 async def get_chat_messages(
