@@ -21,6 +21,7 @@ load_dotenv()
 
 @asynccontextmanager
 async def start_socket(app: FastAPI):
+    logger.info('start app')
     loop = get_event_loop()
     services = environ['SERVICES'].split(',')
 
@@ -38,6 +39,7 @@ async def start_socket(app: FastAPI):
         loop.create_task(Bot(loop, ws_manager).start())
 
     yield
+    logger.info('end app')
 
 
 app = FastAPI(lifespan=start_socket)

@@ -15,6 +15,7 @@ logger.add(
 
 
 if sentry_dns := environ.get('SENTRY_DSN'):
+    logger.info('Adding Sentry!')
     from sentry_sdk import init
     from sentry_sdk.integrations.logging import (
         EventHandler,
@@ -23,6 +24,8 @@ if sentry_dns := environ.get('SENTRY_DSN'):
 
     init(
         dsn=sentry_dns,
+        debug=True,
+        enable_tracing=True,
         integrations=[LoggingIntegration()],
         traces_sample_rate=1.0,
     )

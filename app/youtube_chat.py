@@ -31,11 +31,13 @@ async def get_chat_id(video_id: str = youtube_live_id) -> str:
         chat_id = video_info['items'][0]['liveStreamingDetails'][
             'activeLiveChatId'
         ]
-    except IndexError:
+    except IndexError as e:
         logger.error('Youtube video ID is wrong or not found.')
+        logger.debug(f'{video_info} - {e}')
 
-    except KeyError:
+    except KeyError as e:
         logger.error('Youtube video ID is wrong or not found.')
+        logger.debug(f'{video_info} - {e}')
 
     return chat_id
 
