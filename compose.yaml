@@ -4,9 +4,9 @@ services:
   app:
     build: .
     ports:
-      - 8000:8000
+      - 9000:9000
     expose:
-      - 8000
+      - 9000
     env_file: '.env'
     volumes:
       - './data:/data'
