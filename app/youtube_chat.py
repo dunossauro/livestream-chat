@@ -130,14 +130,17 @@ async def chat_ws_task(
 
         async for message in chat_messages:
             await ws_manager.broadcast(message)
+            await sleep(0.5)
 
         if not has_messages:
-            logger.debug('Not messages, waiting 5 seconds...')
-            await sleep(5)
+            logger.debug('Not messages, waiting 15 seconds...')
+            await sleep(15)
 
         if time_to_next_request > 0:
             logger.debug(f'TIME TO NEXT {time_to_next_request}')
-            await sleep(time_to_next_request)
+            time = time_to_next_request + (has_messages * 0.5)
+            logger.debug(f'Waiting {time}')
+            await sleep(time)
         else:
             await sleep(1)
     else:
