@@ -11,6 +11,8 @@ logger.add(
     rotation='1 week',
     format='{time} {level} {message}',
     level='DEBUG',
+    backtrace=True,
+    diagnose=True
 )
 
 
