@@ -1,0 +1,16 @@
+tests/
+htmlcov/
+.venv/
+.git/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+node_modules/
+migrations/
+package*
+*.log
+*.ini
+*.md
+*.yaml
+LICENSE
+Dockerfile
