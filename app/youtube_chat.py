@@ -3,7 +3,7 @@ from os import environ
 from typing import AsyncGenerator
 
 from dotenv import load_dotenv
-from httpx import AsyncClient, TimeoutException
+from httpx import AsyncClient, ConnectError, TimeoutException
 
 from .database import async_session
 from .logger import logger
@@ -89,6 +89,10 @@ async def get_chat_messages(
             logger.error(exc)
             logger.debug('TimeoutException, wait 1 second...')
             return 1, next_token, format_messages([]), 0
+        except ConnectError as exc:
+            logger.error(exc)
+            logger.debug('ConnectError: f{url}, wait 2 second...')
+            return 2, next_token, format_messages([]), 0
 
     try:
         total_time = messages['pollingIntervalMillis'] / 1_000
