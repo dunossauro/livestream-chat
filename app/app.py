@@ -20,7 +20,7 @@ load_dotenv()
 
 
 @asynccontextmanager
-async def start_socket(app: FastAPI):
+async def start_socket(app: FastAPI):  # noqa: ARG001
     logger.info('start app')
     loop = get_event_loop()
     services = environ['SERVICES'].split(',')
@@ -63,7 +63,7 @@ async def highlight(data: HighlightSchema):
                 'type': 'textMessageEvent',
             },
         )
-    except Exception as ex:
+    except Exception as ex:  # noqa: BLE001
         logger.critical(f'Deu ex: {ex}')
     return {'status': 'OK'}
 

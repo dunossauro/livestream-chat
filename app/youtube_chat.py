@@ -60,7 +60,7 @@ async def format_messages(
                     name=message['authorDetails']['displayName'],
                     comment=message['snippet']['displayMessage'],
                     live='youtube',
-                )
+                ),
             )
             await session.commit()
 
@@ -96,7 +96,7 @@ async def get_chat_messages(
 
     try:
         total_time = messages['pollingIntervalMillis'] / 1_000
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         logger.error(exc)
         logger.error(messages)
         return 1, next_token, format_messages([]), 0
