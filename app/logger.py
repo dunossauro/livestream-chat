@@ -12,7 +12,7 @@ logger.add(
     format='{time} {level} {message}',
     level='DEBUG',
     backtrace=True,
-    diagnose=True
+    diagnose=True,
 )
 
 
