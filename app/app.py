@@ -29,7 +29,8 @@ async def start_socket(app: FastAPI):  # noqa: ARG001
         chat_id = await get_chat_id()
 
         if not chat_id:
-            raise BlockingIOError('Youtube API error to connect!')
+            msg = 'Youtube API error to connect!'
+            raise BlockingIOError(msg)
 
         loop.create_task(
             chat_ws_task(chat_id, loop=loop, ws_manager=ws_manager),
