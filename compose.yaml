@@ -1,7 +1,5 @@
-version: '3.1'
-
 services:
-  app:
+  chat-app:
     build: .
     ports:
       - 9000:9000
