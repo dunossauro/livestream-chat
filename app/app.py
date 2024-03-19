@@ -40,6 +40,7 @@ async def start_socket(app: FastAPI):  # noqa: ARG001
         loop.create_task(Bot(loop, ws_manager).start())
 
     yield
+
     logger.info('end app')
 
 
@@ -50,6 +51,19 @@ templates = Jinja2Templates(directory='templates')
 
 @app.get('/health')
 def health():
+    return {'status': 'OK'}
+
+
+@app.post('/span', status_code=201)
+async def span(data: HighlightSchema):
+    await ws_manager.broadcast(
+        {
+            'message': data.message,
+            'channel': 'messages',
+            'name': data.name,
+            'type': 'textMessageEvent',
+        },
+    )
     return {'status': 'OK'}
 
 
