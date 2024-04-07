@@ -25,23 +25,20 @@ class WebSocketManager:
     def disconnect(self: Self, websocket: WSClient) -> None:
         self.connections.remove(websocket)
 
-    async def send_message(self: Self, con, message: WSMessage):
-        try:
-            await con['web_socket'].send_json(message)
-        except ConnectionClosedOK:
-            logger.info(f'Desconectando: {con}')
-            self.disconnect(con)
-        except WebSocketDisconnect:
-            logger.info(f'Desconectando: {con}')
-            self.disconnect(con)
-        except Exception as e:
-            logger.error(e)
-            self.disconnect(con)
-
     async def broadcast(self: Self, message: WSMessage) -> None:
         for con in self.connections:
             if message['channel'] == con['channel']:
-                await self.send_message(con, message)
+                try:
+                    await con['web_socket'].send_json(message)
+                except ConnectionClosedOK:
+                    logger.info(f'Desconectando: {con}')
+                    self.disconnect(con)
+                except WebSocketDisconnect:
+                    logger.info(f'Desconectando: {con}')
+                    self.disconnect(con)
+                except Exception as e:
+                    logger.error(e)
+                    self.disconnect(con)
 
 
 ws_manager = WebSocketManager()

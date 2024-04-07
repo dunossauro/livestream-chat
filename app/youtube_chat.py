@@ -13,6 +13,7 @@ from .ws_manager import WebSocketManager, WSMessage
 load_dotenv()
 API_KEY = environ['GOOGLE_API_KEY']
 youtube_live_id = environ['YOUTUBE_LIVESTREAM_ID']
+use_db = True
 
 BASE_URL = 'https://www.googleapis.com/youtube/v3/{}'
 
@@ -47,22 +48,23 @@ async def format_messages(
 ) -> AsyncGenerator[WSMessage, None]:
     """Converte a o json confuso do youtube em YoutubeChatSchema."""
     for message in messages:
-
         yield {
             'type': message['snippet']['type'],
             'name': message['authorDetails']['displayName'],
             'message': message['snippet']['displayMessage'],
             'channel': 'messages',
         }
-        async with async_session() as session:
-            session.add(
-                Comment(
-                    name=message['authorDetails']['displayName'],
-                    comment=message['snippet']['displayMessage'],
-                    live='youtube',
-                ),
-            )
-            await session.commit()
+        comment = Comment(
+            name=message['authorDetails']['displayName'],
+            comment=message['snippet']['displayMessage'],
+            live='youtube',
+        )
+        if use_db:
+            async with async_session() as session:
+                session.add(comment)
+                await session.commit()
+        else:
+            logger.debug(comment)
 
 
 async def get_chat_messages(
