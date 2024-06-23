@@ -21,6 +21,7 @@ pydantic-settings = "^2.2.1"
 psycopg2-binary = "^2.9.9"
 alembic = "^1.13.1"
 asyncpg = "^0.29.0"
+emoji = "^2.12.1"
 
 [tool.poetry.group.dev.dependencies]
 xenon = "^0.9.1"

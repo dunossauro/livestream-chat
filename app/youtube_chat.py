@@ -3,6 +3,7 @@ from os import environ
 from typing import AsyncGenerator
 
 from dotenv import load_dotenv
+from emoji import emojize
 from httpx import AsyncClient, ConnectError, TimeoutException
 
 from .database import async_session
@@ -51,7 +52,7 @@ async def format_messages(
         yield {
             'type': message['snippet']['type'],
             'name': message['authorDetails']['displayName'],
-            'message': message['snippet']['displayMessage'],
+            'message': emojize(message['snippet']['displayMessage']),
             'channel': 'messages',
         }
         comment = Comment(
