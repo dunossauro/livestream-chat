@@ -1,4 +1,4 @@
-FROM python:3.12.2-slim
+FROM python:3.12.4-slim
 ENV POETRY_VIRTUALENVS_CREATE=false
 
 RUN pip install poetry

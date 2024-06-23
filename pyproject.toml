@@ -35,7 +35,7 @@ pytest-cov = "^4.1.0"
 mypy-extensions = "^1.0.0"
 
 [tool.taskipy.tasks]
-lint = 'isort --check app && blue --check app && ruff app'
+lint = 'isort --check app && blue --check app && ruff check app'
 test = 'pytest --cov=app -vv'
 post_test = 'coverage html'
 mypy = 'mypy . --ignore-missing-imports --check-untyped-defs'
