@@ -32,12 +32,12 @@ async def start_socket(app: FastAPI):  # noqa: ARG001
             msg = 'Youtube API error to connect!'
             raise BlockingIOError(msg)
 
-        loop.create_task(
+        loop.create_task(  # noqa: RUF006
             chat_ws_task(chat_id, loop=loop, ws_manager=ws_manager),
         )
 
     if 'twitch' in services:
-        loop.create_task(Bot(loop, ws_manager).start())
+        loop.create_task(Bot(loop, ws_manager).start())  # noqa: RUF006
 
     yield
 

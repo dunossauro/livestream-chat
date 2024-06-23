@@ -13,7 +13,7 @@ class Base(DeclarativeBase):
 class Comment(Base):
     __tablename__ = 'comments'
 
-    id: Mapped[int] = mapped_column(primary_key=True)  # noqa: A003
+    id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str]
     comment: Mapped[str]
     live: Mapped[str]
