@@ -1,7 +1,8 @@
+from urllib.parse import unquote
 from typing import Literal, TypeAlias, TypedDict
 
 from fastapi.websockets import WebSocket
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 TypeMessages: TypeAlias = Literal[
     'textMessageEvent',
@@ -19,6 +20,14 @@ class WSClient(TypedDict):
 class HighlightSchema(BaseModel):
     name: str
     message: str
+
+    @field_validator('name')
+    def unquote_name(cls, v):
+        return unquote(v)
+
+    @field_validator('message')
+    def unquote_message(cls, v):
+        return unquote(v)
 
 
 class ChatMessage(TypedDict):
