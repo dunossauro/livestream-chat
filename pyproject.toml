@@ -23,8 +23,6 @@ alembic = "^1.13.1"
 asyncpg = "^0.29.0"
 
 [tool.poetry.group.dev.dependencies]
-blue = "^0.9.1"
-isort = "^5.13.2"
 xenon = "^0.9.1"
 taskipy = "^1.12.2"
 ruff = "^0.3.2"
@@ -33,9 +31,11 @@ respx = "^0.20.2"
 pytest = "^8.0.2"
 pytest-cov = "^4.1.0"
 mypy-extensions = "^1.0.0"
+typos = "^1.22.9"
 
 [tool.taskipy.tasks]
-lint = 'isort --check app && blue --check app && ruff check app'
+lint = 'ruff check app && typos app && typos tests'
+format = 'ruff check app --fix'
 test = 'pytest --cov=app -vv'
 post_test = 'coverage html'
 mypy = 'mypy . --ignore-missing-imports --check-untyped-defs'
@@ -50,6 +50,7 @@ quote-style = 'single'
 
 [tool.ruff.lint.per-file-ignores]
 "app.py" = ['ANN201', 'B008']
+"schemas.py" = ['N805']
 'tests/*' = ['S101', 'S105', 'ANN201', 'INP001', 'PLR2004']
 'static/*' = ['B015', 'ANN201', 'ANN001', 'ARG001', 'INP001', 'ANN202', 'PLR2004']
 
