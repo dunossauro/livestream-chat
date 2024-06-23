@@ -36,7 +36,7 @@ class WebSocketManager:
                 except WebSocketDisconnect:
                     logger.info(f'Desconectando: {con}')
                     self.disconnect(con)
-                except Exception as e:
+                except Exception as e:  # noqa: BLE001
                     logger.error(e)
                     self.disconnect(con)
 

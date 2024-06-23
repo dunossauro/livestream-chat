@@ -46,36 +46,36 @@ async def test_get_chat_messages_should_return_interval_and_token(
             },
         ),
     )
-    inteval, token, _, number_of_messages = await get_chat_messages('1234')
+    interval, token, _, number_of_messages = await get_chat_messages('1234')
 
-    assert inteval == expected_interval / 1_000
+    assert interval == expected_interval / 1_000
     assert token == expected_token
     assert number_of_messages == 0
 
 
 @pytest.mark.asyncio()
-async def test_get_chat_messages_should_receve_timeout_exception(
+async def test_get_chat_messages_should_receive_timeout_exception(
     respx_mock: MockRouter,
 ):
     respx_mock.get(youtube_api_url).mock(side_effect=TimeoutException)
 
-    inteval, *_, number_of_messages = await get_chat_messages('1234')
+    interval, *_, number_of_messages = await get_chat_messages('1234')
 
-    assert inteval == 1
+    assert interval == 1
     assert number_of_messages == 0
 
 
 @pytest.mark.asyncio()
-async def test_get_chat_messages_should_receve_keyerror_exception(
+async def test_get_chat_messages_should_receive_keyerror_exception(
     respx_mock: MockRouter,
 ):
     respx_mock.get(youtube_api_url).mock(
         return_value=Response(200, json={}),
     )
 
-    inteval, *_, number_of_messages = await get_chat_messages('1234')
+    interval, *_, number_of_messages = await get_chat_messages('1234')
 
-    assert inteval == 1
+    assert interval == 1
     assert number_of_messages == 0
 
 

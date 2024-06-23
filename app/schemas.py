@@ -1,5 +1,5 @@
+from typing import Literal, Self, TypeAlias, TypedDict
 from urllib.parse import unquote
-from typing import Literal, TypeAlias, TypedDict
 
 from fastapi.websockets import WebSocket
 from pydantic import BaseModel, field_validator
@@ -22,11 +22,11 @@ class HighlightSchema(BaseModel):
     message: str
 
     @field_validator('name')
-    def unquote_name(cls, v):
+    def unquote_name(cls: Self, v: str) -> str:
         return unquote(v)
 
     @field_validator('message')
-    def unquote_message(cls, v):
+    def unquote_message(cls: Self, v: str) -> str:
         return unquote(v)
 
 
