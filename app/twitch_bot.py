@@ -3,6 +3,7 @@ from os import environ
 from typing import Self
 
 from dotenv import load_dotenv
+from emoji import emojize
 from twitchio import Message
 from twitchio.ext import commands
 from twitchio.ext.commands import Context, command
@@ -37,7 +38,7 @@ class Bot(commands.Bot):
             await self.ws_manager.broadcast(
                 {
                     'name': message.author.name,
-                    'message': message.content,
+                    'message': emojize(message.content),
                     'type': 'textMessageEvent',
                     'channel': 'messages',
                 },
