@@ -22,6 +22,7 @@ psycopg2-binary = "^2.9.9"
 alembic = "^1.13.1"
 asyncpg = "^0.29.0"
 emoji = "^2.12.1"
+psycopg = {extras = ["binary"], version = "^3.1.19"}
 
 [tool.poetry.group.dev.dependencies]
 xenon = "^0.9.1"
@@ -33,10 +34,13 @@ pytest = "^8.0.2"
 pytest-cov = "^4.1.0"
 mypy-extensions = "^1.0.0"
 typos = "^1.22.9"
+pytest-loguru = "^0.4.0"
+pytest-mock = "^3.14.0"
+testcontainers = "^4.7.0"
 
 [tool.taskipy.tasks]
 lint = 'ruff check app && typos app && typos tests'
-format = 'ruff check app --fix'
+format = 'ruff check app --fix; ruff format'
 test = 'pytest --cov=app -vv'
 post_test = 'coverage html'
 mypy = 'mypy . --ignore-missing-imports --check-untyped-defs'

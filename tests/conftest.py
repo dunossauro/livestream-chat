@@ -1,28 +1,31 @@
 import pytest
+import pytest_asyncio
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
+from testcontainers.postgres import PostgresContainer
 
 from app.app import app
 from app.database import get_session
-from app.models import Base
+from app.models import table_registry
 
 
-@pytest.fixture()
-def session():
-    engine = create_engine(
-        'sqlite:///:memory:',
-        poolclass=StaticPool,
-        connect_args={'check_same_thread': False},
-    )
-    Base.metadata.create_all(engine)
+@pytest_asyncio.fixture()
+async def session():
+    with PostgresContainer('postgres:16', driver='psycopg') as postgres:
+        engine = create_async_engine(postgres.get_connection_url())
 
-    _session = sessionmaker(bind=engine)
+        async with engine.begin() as conn:
+            await conn.run_sync(table_registry.metadata.create_all)
 
-    yield _session()
+        async with AsyncSession(engine) as session:
+            yield session
 
-    Base.metadata.drop_all(engine)
+        async with engine.begin() as conn:
+            await conn.run_sync(table_registry.metadata.drop_all)
 
 
 @pytest.fixture()

@@ -2,7 +2,8 @@ import pytest
 from httpx import Response, TimeoutException
 from respx import MockRouter
 
-from app.youtube_chat import format_messages, get_chat_messages
+from app.models import YTChatToken
+from app.youtube_chat import format_messages, get_chat_messages, get_chat_id
 
 youtube_api_url = 'https://www.googleapis.com/youtube/v3/liveChat/messages'
 
@@ -92,3 +93,61 @@ async def test_get_chat_messages_should_call_api_with_pagination_token(
 
     call_params = mock.calls.last.request.url.params
     assert call_params['pageToken'] == next_token
+
+
+@pytest.mark.asyncio()
+async def test_get_chat_id(respx_mock: MockRouter, mocker, session):
+    mock_response = {
+        'items': [
+            {'liveStreamingDetails': {'activeLiveChatId': 'live_token'}}
+        ],
+    }
+
+    mock = respx_mock.get('https://www.googleapis.com/youtube/v3/videos').mock(
+        return_value=Response(200, json=mock_response)
+    )
+
+    patch = mocker.patch('app.youtube_chat.async_session')
+    patch.return_value = session
+
+    result = await get_chat_id('live_id')
+    assert result == 'live_token'
+
+    token_db = await session.get(YTChatToken, 'live_id')
+    assert token_db.token == 'live_token'
+
+
+@pytest.mark.asyncio()
+async def test_get_chat_id_not_found_token_indexerror(
+    respx_mock: MockRouter, caplog
+):
+    mock_response = {'items': []}
+
+    mock = respx_mock.get('https://www.googleapis.com/youtube/v3/videos').mock(
+        return_value=Response(200, json=mock_response)
+    )
+
+    result = await get_chat_id()
+    assert not result
+    assert (
+        caplog.record_tuples[0][2] == 'Youtube video ID is wrong or not found.'
+    )
+    assert str(mock_response) in caplog.record_tuples[1][2]
+
+
+@pytest.mark.asyncio()
+async def test_get_chat_id_not_found_token_keyerror(
+    respx_mock: MockRouter, caplog
+):
+    mock_response = {}
+
+    mock = respx_mock.get('https://www.googleapis.com/youtube/v3/videos').mock(
+        return_value=Response(200, json=mock_response)
+    )
+
+    result = await get_chat_id()
+    assert not result
+    assert (
+        caplog.record_tuples[0][2] == 'Youtube video ID is wrong or not found.'
+    )
+    assert str(mock_response) in caplog.record_tuples[1][2]

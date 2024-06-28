@@ -12,11 +12,11 @@ def on_message_click(event):
     name, message = event.target.select('p')
 
     data = window.JSON.stringify(
-            {
-                'message': window.encodeURIComponent(message.text),
-                'name': window.encodeURIComponent(name.text)
-            }
-        )
+        {
+            'message': window.encodeURIComponent(message.text),
+            'name': window.encodeURIComponent(name.text),
+        }
+    )
 
     ajax.post(
         f'http://{window.location.host}/highlight',

@@ -8,7 +8,7 @@ from httpx import AsyncClient, ConnectError, TimeoutException
 
 from .database import async_session
 from .logger import logger
-from .models import Comment
+from .models import Comment, YTChatToken
 from .ws_manager import WebSocketManager, WSMessage
 
 load_dotenv()
@@ -33,11 +33,14 @@ async def get_chat_id(video_id: str = youtube_live_id) -> str:
         chat_id = video_info['items'][0]['liveStreamingDetails'][
             'activeLiveChatId'
         ]
-    except IndexError as e:
-        logger.error('Youtube video ID is wrong or not found.')
-        logger.debug(f'{video_info} - {e}')
 
-    except KeyError as e:
+        token = YTChatToken(live_id=video_id, token=chat_id)
+
+        async with async_session() as session:
+            session.add(token)
+            await session.commit()
+
+    except (IndexError, KeyError) as e:
         logger.error('Youtube video ID is wrong or not found.')
         logger.debug(f'{video_info} - {e}')
 
@@ -49,23 +52,26 @@ async def format_messages(
 ) -> AsyncGenerator[WSMessage, None]:
     """Converte a o json confuso do youtube em YoutubeChatSchema."""
     for message in messages:
-        yield {
-            'type': message['snippet']['type'],
-            'name': message['authorDetails']['displayName'],
-            'message': emojize(message['snippet']['displayMessage']),
-            'channel': 'messages',
-        }
-        comment = Comment(
-            name=message['authorDetails']['displayName'],
-            comment=message['snippet']['displayMessage'],
-            live='youtube',
-        )
-        if use_db:
+        try:
+            yield {
+                'type': message['snippet']['type'],
+                'name': message['authorDetails']['displayName'],
+                'message': emojize(message['snippet']['displayMessage']),
+                'channel': 'messages',
+            }
+            comment = Comment(
+                name=message['authorDetails']['displayName'],
+                comment=message['snippet']['displayMessage'],
+                live='youtube',
+            )
             async with async_session() as session:
                 session.add(comment)
                 await session.commit()
-        else:
-            logger.debug(comment)
+
+        except Exception as e:
+            logger.error(
+                f'{e}: {message}',
+            )
 
 
 async def get_chat_messages(
