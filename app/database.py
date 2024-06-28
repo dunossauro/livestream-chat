@@ -18,6 +18,6 @@ async def get_session() -> (
         AsyncSession,
         None,
     ]
-):  # pagma: no cover
+):  # pragma: no cover
     async with async_session() as session:
         yield session

@@ -5,6 +5,7 @@ from typing import AsyncGenerator
 from dotenv import load_dotenv
 from emoji import emojize
 from httpx import AsyncClient, ConnectError, TimeoutException
+from sqlalchemy import select
 
 from .database import async_session
 from .logger import logger
@@ -19,7 +20,7 @@ use_db = True
 BASE_URL = 'https://www.googleapis.com/youtube/v3/{}'
 
 
-async def get_chat_id(video_id: str = youtube_live_id) -> str:
+async def get_chat_id(video_id: str = youtube_live_id) -> YTChatToken | None:
     params = {'part': 'liveStreamingDetails', 'key': API_KEY, 'id': video_id}
     chat_id = ''
 
@@ -34,17 +35,25 @@ async def get_chat_id(video_id: str = youtube_live_id) -> str:
             'activeLiveChatId'
         ]
 
-        token = YTChatToken(live_id=video_id, token=chat_id)
-
         async with async_session() as session:
-            session.add(token)
+            token = await session.scalar(select(YTChatToken))
+
+            if token.live_id != video_id:
+                token.next_token = None
+
+            token.live_id = video_id
+            token.live_token = chat_id
+
             await session.commit()
+            await session.refresh(token)
+
+        return token
 
     except (IndexError, KeyError) as e:
         logger.error('Youtube video ID is wrong or not found.')
         logger.debug(f'{video_info} - {e}')
 
-    return chat_id
+    return None
 
 
 async def format_messages(
@@ -121,8 +130,7 @@ async def get_chat_messages(
 
 
 async def chat_ws_task(
-    chat_id: str,
-    next_token: str | None = None,
+    chat_token: YTChatToken,
     *,
     loop: AbstractEventLoop,
     ws_manager: WebSocketManager,
@@ -133,7 +141,16 @@ async def chat_ws_task(
             next_token,
             chat_messages,
             has_messages,
-        ) = await get_chat_messages(chat_id, next_token)
+        ) = await get_chat_messages(
+            chat_token.live_token, chat_token.next_token
+        )
+
+        async with async_session() as session:
+            chat_token = await session.scalar(select(YTChatToken))
+
+            chat_token.next_token = next_token
+            await session.commit()
+            await session.refresh(chat_token)
 
         logger.debug(f'{time_to_next_request=}, {next_token=}.')
 
@@ -157,5 +174,5 @@ async def chat_ws_task(
         await sleep(5)
 
     await loop.create_task(
-        chat_ws_task(chat_id, next_token, loop=loop, ws_manager=ws_manager),
+        chat_ws_task(chat_token, loop=loop, ws_manager=ws_manager),
     )

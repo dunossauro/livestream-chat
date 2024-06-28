@@ -96,7 +96,7 @@ async def test_get_chat_messages_should_call_api_with_pagination_token(
 
 
 @pytest.mark.asyncio()
-async def test_get_chat_id(respx_mock: MockRouter, mocker, session):
+async def test_get_chat_id(respx_mock: MockRouter, mocker, session, token):
     mock_response = {
         'items': [
             {'liveStreamingDetails': {'activeLiveChatId': 'live_token'}}
@@ -111,10 +111,10 @@ async def test_get_chat_id(respx_mock: MockRouter, mocker, session):
     patch.return_value = session
 
     result = await get_chat_id('live_id')
-    assert result == 'live_token'
+    assert result.live_token == 'live_token'
 
     token_db = await session.get(YTChatToken, 'live_id')
-    assert token_db.token == 'live_token'
+    assert token_db.live_token == 'live_token'
 
 
 @pytest.mark.asyncio()

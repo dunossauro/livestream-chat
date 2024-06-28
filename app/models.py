@@ -27,7 +27,8 @@ class YTChatToken:
     __tablename__ = 'ytchattoken'
 
     live_id: Mapped[str] = mapped_column(primary_key=True)
-    token: Mapped[str]
+    live_token: Mapped[str]
+    next_token: Mapped[Optional[str]] = mapped_column(default=None)
     created_at: Mapped[Optional[datetime]] = mapped_column(  # noqa: UP007
         init=False,
         default=datetime.now,

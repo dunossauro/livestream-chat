@@ -10,10 +10,10 @@ from testcontainers.postgres import PostgresContainer
 
 from app.app import app
 from app.database import get_session
-from app.models import table_registry
+from app.models import table_registry, YTChatToken
 
 
-@pytest_asyncio.fixture()
+@pytest_asyncio.fixture(scope='session')
 async def session():
     with PostgresContainer('postgres:16', driver='psycopg') as postgres:
         engine = create_async_engine(postgres.get_connection_url())
@@ -37,3 +37,12 @@ def client(session):
         app.router.on_startup = []
         app.dependency_overrides[get_session] = get_session_override
         yield client
+
+
+@pytest_asyncio.fixture()
+async def token(session):
+    token = YTChatToken('mock_id', 'mock_token')
+    session.add(token)
+    await session.commit()
+
+    return token

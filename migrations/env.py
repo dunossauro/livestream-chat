@@ -3,7 +3,7 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from app.models import Base
+from app.models import table_registry
 from app.settings import Settings
 
 # this is the Alembic Config object, which provides
@@ -20,7 +20,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata
+target_metadata = table_registry.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
