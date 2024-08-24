@@ -39,6 +39,3 @@ class WebSocketManager:
                 except Exception as e:  # noqa: BLE001
                     logger.error(e)
                     self.disconnect(con)
-
-
-ws_manager = WebSocketManager()
