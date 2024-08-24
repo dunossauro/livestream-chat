@@ -3,13 +3,11 @@ import pytest_asyncio
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
-    async_sessionmaker,
     create_async_engine,
 )
 from testcontainers.postgres import PostgresContainer
 
 from app.app import app
-from app.database import get_session
 from app.models import table_registry, YTChatToken
 
 
@@ -29,14 +27,8 @@ async def session():
 
 
 @pytest.fixture()
-def client(session):
-    def get_session_override():
-        return session
-
-    with TestClient(app) as client:
-        app.router.on_startup = []
-        app.dependency_overrides[get_session] = get_session_override
-        yield client
+def client():
+    return TestClient(app)
 
 
 @pytest_asyncio.fixture()
