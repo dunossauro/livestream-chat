@@ -88,3 +88,13 @@ class Bot(commands.Bot):
     @command(name='apoiase')
     async def cmd_apoiase(self: Self, ctx: Context) -> None:
         await ctx.send('http://apoia.se/livedepython')
+
+    @command(name='projeto')
+    async def cmd_projeto(self: Self, ctx: Context) -> None:
+        await ctx.send('https://fastapidozero.dunossauro.com/14/')
+
+    @command(name='planejamento')
+    async def cmd_planejamento(self: Self, ctx: Context) -> None:
+        await ctx.send(
+            'https://github.com/dunossauro/live-de-python/issues/359'
+        )

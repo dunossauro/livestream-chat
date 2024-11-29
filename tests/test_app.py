@@ -4,7 +4,6 @@ from fastapi.testclient import TestClient
 from app.app import app
 
 
-
 def test_health_should_return_ok(client: TestClient):
     response = client.get('/health')
     assert response.json() == {'status': 'OK'}
@@ -14,6 +13,7 @@ def test_root_should_return_template(client: TestClient):
     response = client.get('/')
     assert 'doctype html' in response.content.decode()
     assert response.status_code == 200
+
 
 def test_get_highlight_should_return_template(client: TestClient):
     response = client.get('/highlight')
@@ -36,7 +36,7 @@ def test_post_highlight_should_call_ws_broadcast(client: TestClient):
 
 
 def test_highlight_should_raise_error_when_ws_disconnect(
-        client: TestClient, caplog
+    client: TestClient, caplog
 ):
     mock = AsyncMock()
     mock.broadcast.side_effect = Exception('Error!')
