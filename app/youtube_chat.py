@@ -1,6 +1,6 @@
 from asyncio import AbstractEventLoop, sleep
 from os import environ
-from typing import AsyncGenerator
+from typing import AsyncGenerator, cast
 
 from dotenv import load_dotenv
 from emoji import emojize
@@ -37,6 +37,7 @@ async def get_chat_id(video_id: str = youtube_live_id) -> YTChatToken | None:
 
         async with async_session() as session:
             token = await session.scalar(select(YTChatToken))
+            token = cast(YTChatToken, token)
 
             if token.live_id != video_id:
                 token.next_token = None
