@@ -11,6 +11,7 @@ from twitchio.ext.commands import Context, command
 from .database import async_session
 from .models import Comment
 from .ws_manager import WebSocketManager
+from .logger import logger
 
 load_dotenv()
 
@@ -34,15 +35,23 @@ class Bot(commands.Bot):
         self: Self,
         message: Message,
     ) -> None:
+        logger.info('receve message')
+
+        msg = {
+            'message': emojize(message.content),
+            'type': 'textMessageEvent',
+            'channel': 'messages',
+        }
+
+        logger.debug(f'receve message: {msg}')
+
         if message.author:
             await self.ws_manager.broadcast(
-                {
-                    'name': message.author.name,
-                    'message': emojize(message.content),
-                    'type': 'textMessageEvent',
-                    'channel': 'messages',
-                },
+                msg | {'name': message.author.name}
             )
+
+            await self.handle_commands(message)
+
             async with async_session() as session:
                 session.add(
                     Comment(
@@ -52,18 +61,8 @@ class Bot(commands.Bot):
                     ),
                 )
                 await session.commit()
-
-            await self.handle_commands(message)
-
         else:
-            await self.ws_manager.broadcast(
-                {
-                    'name': 'bot!',
-                    'message': message.content,
-                    'type': 'textMessageEvent',
-                    'channel': 'messages',
-                },
-            )
+            await self.ws_manager.broadcast(msg | {'name': 'bot!'})
 
     @command(name='curso')
     async def cmd_curso(self: Self, ctx: Context) -> None:
@@ -91,7 +90,9 @@ class Bot(commands.Bot):
 
     @command(name='projeto')
     async def cmd_projeto(self: Self, ctx: Context) -> None:
-        await ctx.send('https://fastapidozero.dunossauro.com/14/')
+        await ctx.send(
+            'Atualmente estou trabalhando no: https://github.com/dunossauro/videomaker-helper'
+        )
 
     @command(name='planejamento')
     async def cmd_planejamento(self: Self, ctx: Context) -> None:
