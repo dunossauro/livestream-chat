@@ -66,4 +66,5 @@ async def chat(
             await sleep(10)
 
     except ConnectionClosedOK:
+        logger.info(f'{channel} desconectado.')
         ws_manager.disconnect(ws)
