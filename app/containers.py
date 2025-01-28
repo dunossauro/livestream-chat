@@ -1,4 +1,4 @@
-from asyncio import get_event_loop
+from asyncio import get_running_loop
 from dependency_injector import containers, providers
 from .ws_manager import WebSocketManager
 from .services import Youtube, Twitch
@@ -11,7 +11,7 @@ class Container(containers.DeclarativeContainer):
 
     # container.config.from_pydantic(Settings())
 
-    loop = providers.Callable(get_event_loop)
+    loop = providers.Callable(get_running_loop)
 
     ws_manager = providers.Singleton(WebSocketManager)
 

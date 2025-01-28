@@ -8,8 +8,7 @@ class Service:
         self.ws_manager = ws_manager
         self.loop = loop
 
-    async def start(self):
-        ...
+    async def start(self): ...
 
 
 class Youtube(Service):
