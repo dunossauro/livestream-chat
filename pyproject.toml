@@ -40,11 +40,10 @@ dev = [
 [tool.poetry]
 package-mode = false
 
-
 [tool.taskipy.tasks]
 lint = 'ruff check app && typos app && typos tests'
 format = 'ruff check app --fix; ruff format'
-test = 'pytest --cov=app -vv'
+test = 'pytest --cov=app --cov-report=term-missing --cov-report=html --cov-fail-under=70 -vv'
 post_test = 'coverage html'
 mypy = 'mypy . --ignore-missing-imports --check-untyped-defs'
 
@@ -70,7 +69,6 @@ convention = "google"
 
 [tool.pytest.ini_options]
 pythonpath = '.'
-
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
