@@ -1,7 +1,7 @@
 from unittest.mock import AsyncMock
-import pytest
 from fastapi.testclient import TestClient
 from app.app import app
+from app.ws_manager import WebSocketManager
 
 
 def test_health_should_return_ok(client: TestClient):
@@ -22,7 +22,7 @@ def test_get_highlight_should_return_template(client: TestClient):
 
 
 def test_post_highlight_should_call_ws_broadcast(client: TestClient):
-    mock = AsyncMock()
+    mock = AsyncMock(spec_set=WebSocketManager)
 
     data = {'name': 'test', 'message': 'test'}
     expected = data | {'channel': 'event', 'type': 'textMessageEvent'}
@@ -38,7 +38,7 @@ def test_post_highlight_should_call_ws_broadcast(client: TestClient):
 def test_highlight_should_raise_error_when_ws_disconnect(
     client: TestClient, caplog
 ):
-    mock = AsyncMock()
+    mock = AsyncMock(spec_set=WebSocketManager)
     mock.broadcast.side_effect = Exception('Error!')
 
     data = {'name': 'test', 'message': 'test'}
