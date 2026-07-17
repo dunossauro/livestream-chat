@@ -1,3 +1,7 @@
+Repositório arquivado, foi para [https://codeberg.org/dunossauro/livestream-chat](https://codeberg.org/dunossauro/livestream-chat)
+
+---
+
 # livestream-chat
 
 Overlay para chats de livestreams. Inicialmente para rodar dentro do browser do obs-studio.
